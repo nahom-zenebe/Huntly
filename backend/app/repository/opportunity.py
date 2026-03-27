@@ -4,6 +4,8 @@ from app.models.opportunity import Opportunity
 from app.schemas.opportunity import OpportunityCreate
 from fastapi import HTTPException, status
 
+from datetime import datetime, timedelta
+
 class OpportunityRepository:
 
     def __init__(self, db: Session):
@@ -110,12 +112,13 @@ class OpportunityRepository:
             raise e
         
     def get_stats(self):
+        soon = datetime.utcnow() + timedelta(days=7)
         total_opportunities = self.db.query(Opportunity).count()
         job_opportunities = self.db.query(Opportunity).filter(Opportunity.status == "job").count()
         hackthon_opportunities = self.db.query(Opportunity).filter(Opportunity.status == "hackathon").count()
         internship_opportunities = self.db.query(Opportunity).filter(Opportunity.status == "internship").count()
         scholarship_opportunities = self.db.query(Opportunity).filter(Opportunity.status == "scholarship").count()
-        deadline_soon_opportunities = self.db.query(Opportunity).filter(Opportunity.Deadline < "2024-12-31").count()
+        deadline_soon_opportunities = self.db.query(Opportunity).filter(Opportunity.Deadline  <= soon).count()
 
         return {"total_opportunities": total_opportunities, "job_opportunities": job_opportunities, "hackthon_opportunities": hackthon_opportunities, "internship_opportunities": internship_opportunities, "scholarship_opportunities": scholarship_opportunities, "deadline_soon_opportunities": deadline_soon_opportunities}
     
