@@ -38,9 +38,10 @@ class UserRepository:
     def get_by_email(self, email: str):
         return self.db.query(User).filter(User.email == email).first()
 
-    def create_user(self, email: str, password: str):
-        user = User(email=email, password=password)
-        self.db.add(user)
-        self.db.commit()
-        self.db.refresh(user)
-        return user
+    def total_user(self) -> int:
+        totalusers=self.db.query(User).count()
+        adminusers=self.db.query(User).filter(User.role == "admin").count()
+        regularusers=self.db.query(User).filter(User.role == "user").count()
+
+
+        return {"total_users": totalusers, "admin_users": adminusers, "regular_users": regularusers}
