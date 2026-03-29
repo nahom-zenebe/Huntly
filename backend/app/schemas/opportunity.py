@@ -24,6 +24,7 @@ class OpportunityBase(BaseModel):
 	isRemote: str
 	score: Optional[int] = None
 	popularity: Optional[int] = None
+	isliked: bool = False
 	sourceId: str
 	sourceUrl: str
 

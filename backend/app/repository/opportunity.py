@@ -59,6 +59,25 @@ class OpportunityRepository:
             self.db.rollback()
             raise e
         
+    def isliked(self, opportunity_id: str, user_id: str) -> bool:
+        try:
+            if not opportunity_id or not user_id:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid opportunity ID or user ID"
+                )
+            opportunity=self.db.query(Opportunity).filter(Opportunity.id == opportunity_id).first()
+
+            if opportunity.isliked==True:
+                return False
+            else:
+                return True
+        
+        except Exception as e:
+            self.db.rollback()
+            raise e
+
+
     def update_opportunity(self, opportunity_id: str, opportunity_data: OpportunityCreate) -> Opportunity:
         try:
             if not opportunity_id or not opportunity_data:
@@ -124,6 +143,26 @@ class OpportunityRepository:
     
     def search_opportunities(self, query: str):
         return self.db.query(Opportunity).filter(Opportunity.title.ilike(f"%{query}%")).all()
+    
+    def delete_opportunities(self,oppuntunity_id: str):
+        try:
+            if oppuntunity_id:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid opportunity ID"
+                )
+            Opportunity=self.db.query(Opportunity).filter(Opportunity.id == oppuntunity_id).first()
+            
+            if not Opportunity:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Opportunity not found"
+                )
+            self.db.query(Opportunity).delete()
+            self.db.commit()
+        except Exception as e:
+            self.db.rollback()
+            raise e
     
 
     
